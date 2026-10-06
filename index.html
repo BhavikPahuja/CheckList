@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>Semester Command Center</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #070b14;
+        color: #e8edf7;
+        font:
+          14px Inter,
+          system-ui,
+          sans-serif;
+      }
+      .app {
+        min-height: 100vh;
+        display: flex;
+        background: radial-gradient(circle at 80% -10%, #18213e, #070b14 55%);
+      }
+      aside {
+        width: 245px;
+        position: fixed;
+        inset: 0 auto 0 0;
+        padding: 26px 18px;
+        border-right: 1px solid #20283a;
+        background: #080c15e8;
+        backdrop-filter: blur(12px);
+      }
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+        font-weight: 900;
+      }
+      .brand b,
+      .brand small {
+        display: block;
+      }
+      .brand small {
+        color: #718099;
+        font-size: 10px;
+      }
+      .nav {
+        margin-top: 30px;
+        display: grid;
+        gap: 6px;
+      }
+      .nav button,
+      .reset {
+        border: 0;
+        background: transparent;
+        color: #8a95aa;
+        text-align: left;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .nav button.active,
+      .nav button:hover {
+        background: #151d2e;
+        color: white;
+      }
+      .sidecard {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 65px;
+        padding: 15px;
+        border: 1px solid #252e43;
+        background: #0e1423;
+        border-radius: 14px;
+      }
+      .sidecard small,
+      .sidecard span {
+        display: block;
+        color: #77839a;
+        font-size: 10px;
+      }
+      .sidecard b {
+        display: block;
+        margin: 6px 0;
+      }
+      .reset {
+        position: absolute;
+        bottom: 18px;
+        left: 18px;
+        right: 18px;
+        border: 1px solid #252e43;
+        font-size: 11px;
+      }
+      main {
+        margin-left: 245px;
+        max-width: 1200px;
+        width: calc(100% - 245px);
+        padding: 40px 48px 70px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+      .eyebrow {
+        letter-spacing: 0.18em;
+        font-size: 10px;
+        color: #7e8aa4;
+        font-weight: 800;
+      }
+      h1 {
+        font-size: 34px;
+        letter-spacing: -0.04em;
+        margin: 7px 0;
+      }
+      .sub {
+        color: #78849b;
+        margin: 0;
+      }
+      .stats {
+        display: flex;
+        gap: 8px;
+      }
+      .stats div {
+        border: 1px solid #252e43;
+        background: #0e1422;
+        border-radius: 12px;
+        padding: 11px 15px;
+      }
+      .stats b,
+      .stats span {
+        display: block;
+      }
+      .stats span {
+        font-size: 9px;
+        color: #77839a;
+        margin-top: 2px;
+      }
+      .datebar {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+      .datebar button {
+        border: 1px solid #263147;
+        background: #0e1524;
+        color: #bfc8d8;
+        height: 38px;
+        border-radius: 9px;
+        cursor: pointer;
+      }
+      .datebar .arrow {
+        width: 38px;
+      }
+      .datebar .date {
+        flex: 1;
+        padding: 0 8px;
+      }
+      .date b,
+      .date small {
+        display: block;
+      }
+      .date small {
+        color: #6f7b91;
+        font-size: 10px;
+      }
+      .today {
+        padding: 0 14px;
+      }
+      .hero,
+      .card,
+      .week,
+      .overall,
+      .note {
+        border: 1px solid #252f43;
+        background: #0e1523;
+        border-radius: 17px;
+      }
+      .hero {
+        padding: 25px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .pill {
+        font-size: 10px;
+        background: #211b3e;
+        color: #c5b8ff;
+        border: 1px solid #493d73;
+        border-radius: 999px;
+        padding: 6px 10px;
+      }
+      .hero h2 {
+        font-size: 28px;
+        margin: 12px 0 5px;
+      }
+      .hero p {
+        color: #78849b;
+        margin: 0;
+      }
+      .ring {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: conic-gradient(#8b5cf6 var(--p), #273147 0);
+        position: relative;
+      }
+      .ring:after {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        border-radius: 50%;
+        background: #101828;
+      }
+      .ring b {
+        position: relative;
+        z-index: 1;
+      }
+      .tasks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .task {
+        min-height: 90px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid #232d42;
+        background: #0d1421;
+        color: #e2e8f2;
+        border-radius: 13px;
+        padding: 13px;
+        text-align: left;
+        cursor: pointer;
+      }
+      .task.done {
+        border-color: #245348;
+        background: #0e1b1b;
+      }
+      .check {
+        width: 23px;
+        height: 23px;
+        border: 1px solid #3a465d;
+        border-radius: 7px;
+        display: grid;
+        place-items: center;
+        flex: none;
+        color: #8ef1d5;
+      }
+      .done .check {
+        background: #1b5b4e;
+      }
+      .task .body {
+        flex: 1;
+      }
+      .task b,
+      .task small {
+        display: block;
+      }
+      .task b {
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .task small {
+        font-size: 9px;
+        color: #77839a;
+        margin-top: 5px;
+      }
+      .pts {
+        font-size: 10px;
+        color: #ad9eff;
+        font-weight: 800;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin: 14px 0 28px;
+      }
+      .actions button {
+        border: 1px solid #29344a;
+        background: #121a2b;
+        color: #d0d7e4;
+        border-radius: 9px;
+        padding: 10px 13px;
+        cursor: pointer;
+      }
+      .actions button:first-child {
+        background: #8b5cf6;
+        border-color: #8b5cf6;
+        color: white;
+      }
+      .sectionHead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 20px 12px;
+      }
+      .weekgrid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 7px;
+        padding: 0 20px 20px;
+      }
+      .weekgrid button {
+        border: 1px solid #222c40;
+        background: #101827;
+        color: #bdc6d6;
+        border-radius: 9px;
+        padding: 10px 5px;
+        cursor: pointer;
+      }
+      .weekgrid button.current {
+        border-color: #7258d2;
+      }
+      .weekgrid span,
+      .weekgrid b {
+        display: block;
+      }
+      .weekgrid span {
+        font-size: 9px;
+        color: #718099;
+      }
+      .weekgrid b {
+        font-size: 11px;
+        margin: 4px;
+      }
+      .mini {
+        height: 4px;
+        background: #273147;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+      .mini i {
+        display: block;
+        height: 100%;
+        background: #8b5cf6;
+      }
+      .overall {
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+      .overall h2 {
+        font-size: 52px;
+        margin: 5px 0;
+      }
+      .overall p {
+        color: #77839a;
+      }
+      .bigbar {
+        height: 9px;
+        background: #273147;
+        border-radius: 9px;
+        overflow: hidden;
+      }
+      .bigbar i {
+        display: block;
+        height: 100%;
+        background: #8b5cf6;
+      }
+      .progress {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .pc {
+        padding: 17px;
+        border: 1px solid #252f43;
+        background: #0e1523;
+        border-radius: 15px;
+      }
+      .pctop {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .ico {
+        width: 35px;
+        height: 35px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+      }
+      .pctop div:nth-child(2) {
+        flex: 1;
+      }
+      .pctop b,
+      .pctop small {
+        display: block;
+      }
+      .pctop small {
+        font-size: 9px;
+        color: #718099;
+        margin-top: 3px;
+      }
+      .bar {
+        height: 7px;
+        background: #263147;
+        border-radius: 9px;
+        margin-top: 14px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        border-radius: 9px;
+      }
+      .pc > small {
+        display: block;
+        color: #69758c;
+        font-size: 9px;
+        margin-top: 7px;
+      }
+      .roadmap {
+        display: grid;
+        gap: 12px;
+      }
+      .phase {
+        display: grid;
+        grid-template-columns: 60px 1fr;
+        gap: 15px;
+        padding: 22px;
+        border: 1px solid #252f43;
+        background: #0e1523;
+        border-radius: 16px;
+      }
+      .num {
+        font-size: 28px;
+        font-weight: 900;
+        color: #303b52;
+      }
+      .phase h2 {
+        margin: 0 0 10px;
+      }
+      .phase li {
+        color: #8994aa;
+        line-height: 1.9;
+        font-size: 12px;
+      }
+      .finish {
+        padding: 17px;
+        border: 1px solid #3a2e68;
+        background: #17122a;
+        border-radius: 15px;
+      }
+      .finish b,
+      .finish span {
+        display: block;
+      }
+      .finish span {
+        font-size: 11px;
+        color: #8f87a9;
+        margin-top: 5px;
+      }
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        background: #f3f6fb;
+        color: #101625;
+        padding: 11px 14px;
+        border-radius: 9px;
+        box-shadow: 0 10px 35px #0008;
+        font-size: 12px;
+      }
+      @media (max-width: 850px) {
+        aside {
+          width: 65px;
+          padding: 18px 9px;
+        }
+        .brand div:not(.logo),
+        .sidecard,
+        .reset {
+          display: none;
+        }
+        .nav button {
+          font-size: 0;
+          text-align: center;
+        }
+        .nav button span {
+          font-size: 16px;
+        }
+        main {
+          margin-left: 65px;
+          width: calc(100% - 65px);
+          padding: 25px 18px;
+        }
+        .tasks {
+          grid-template-columns: 1fr 1fr;
+        }
+        .progress {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        header {
+          display: block;
+        }
+        .stats {
+          margin-top: 14px;
+        }
+        .tasks {
+          grid-template-columns: 1fr;
+        }
+        .weekgrid {
+          overflow: auto;
+        }
+        .weekgrid button {
+          min-width: 60px;
+        }
+        .phase {
+          grid-template-columns: 38px 1fr;
+        }
+        h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside>
+        <div class="brand">
+          <div class="logo">S</div>
+          <div><b>Semester CC</b><small>Oct → Dec 2026</small></div>
+        </div>
+        <div class="nav">
+          <button class="active" data-tab="today"><span>✓</span> Today</button
+          ><button data-tab="progress"><span>◔</span> Progress</button
+          ><button data-tab="roadmap"><span>⌁</span> Roadmap</button>
+        </div>
+        <div class="sidecard">
+          <span>Current focus</span><b>Build → Solve → Revise</b
+          ><small>Every checkbox updates the relevant section.</small>
+        </div>
+        <button class="reset" id="reset">Reset local progress</button>
+      </aside>
+      <main>
+        <header>
+          <div>
+            <div class="eyebrow">SEMESTER COMMAND CENTER</div>
+            <h1 id="title">Today's execution</h1>
+            <p class="sub">Your October–December preparation tracker.</p>
+          </div>
+          <div class="stats">
+            <div><b id="points">0</b><span>points earned</span></div>
+            <div><b id="streak">0</b><span>day streak</span></div>
+          </div>
+        </header>
+        <div id="content"></div>
+      </main>
+      <div id="toast" class="toast" style="display: none"></div>
+    </div>
+    <script>
+      const S = "semester-command-center-v1";
+      let state = JSON.parse(localStorage.getItem(S) || "{}");
+      const sections = [
+        ["CP/DSA", "⚔️", "#8b5cf6", "CF Expert + LC 2100–2300+"],
+        [
+          "Spring Backend",
+          "☕",
+          "#f97316",
+          "Spring Boot + Security + Microservices",
+        ],
+        ["Spring AI", "🤖", "#06b6d4", "Spring AI + RAG + Agents"],
+        ["DBMS", "🗄️", "#22c55e", "Interview-ready DBMS"],
+        ["SQL", "🔎", "#eab308", "Advanced interview SQL"],
+        ["CN", "🌐", "#3b82f6", "Strong Computer Networks"],
+        ["System Design", "🏗️", "#ec4899", "Decent HLD + LLD foundation"],
+      ];
+      const T = (id, title, section, minutes, points, tag = "") => ({
+        id,
+        title,
+        section,
+        minutes,
+        points,
+        tag,
+      });
+      const schedule = {
+        1: [
+          T(
+            "mon-cp",
+            "CP: 2h focused problem solving",
+            "CP/DSA",
+            120,
+            2,
+            "Daily",
+          ),
+          T(
+            "mon-spring",
+            "Spring: learn + implement current topic",
+            "Spring Backend",
+            120,
+            2,
+            "Main",
+          ),
+          T(
+            "mon-dbms",
+            "DBMS: playlist + active recall",
+            "DBMS",
+            60,
+            1,
+            "Core CS",
+          ),
+        ],
+        2: [
+          T("tue-cp", "CP: 2h problem solving", "CP/DSA", 120, 2, "Daily"),
+          T("tue-ai", "Spring AI: learn + code", "Spring AI", 120, 2, "Main"),
+          T("tue-sql", "SQL: 3–5 quality problems", "SQL", 60, 1, "Core CS"),
+        ],
+        3: [
+          T("wed-cp", "CP: 2h focused practice", "CP/DSA", 120, 2, "Daily"),
+          T(
+            "wed-ms",
+            "Microservices: learn + implement",
+            "Spring Backend",
+            120,
+            2,
+            "Main",
+          ),
+          T("wed-cn", "CN: playlist + notes", "CN", 60, 1, "Core CS"),
+        ],
+        4: [
+          T(
+            "thu-lc",
+            "LeetCode: contest-style practice",
+            "CP/DSA",
+            120,
+            2,
+            "LC",
+          ),
+          T(
+            "thu-backend",
+            "Spring/Microservices: implementation",
+            "Spring Backend",
+            120,
+            2,
+            "Build",
+          ),
+          T(
+            "thu-core",
+            "DBMS / SQL alternating revision",
+            "DBMS",
+            60,
+            1,
+            "Core CS",
+          ),
+        ],
+        5: [
+          T(
+            "fri-cf",
+            "CF simulation: 2h, no editorial",
+            "CP/DSA",
+            120,
+            2,
+            "Contest",
+          ),
+          T(
+            "fri-project",
+            "Backend project: build, test, document",
+            "Spring Backend",
+            120,
+            2,
+            "Build",
+          ),
+          T(
+            "fri-review",
+            "Weekly technical revision",
+            "Spring AI",
+            60,
+            1,
+            "Review",
+          ),
+        ],
+        6: [
+          T(
+            "sat-cf",
+            "Codeforces contest / virtual contest + analysis",
+            "CP/DSA",
+            180,
+            3,
+            "Contest",
+          ),
+          T(
+            "sat-project",
+            "Deep project block: microservices / AI",
+            "Spring Backend",
+            180,
+            3,
+            "Build",
+          ),
+          T(
+            "sat-ai",
+            "Spring AI: playlist / RAG / agents",
+            "Spring AI",
+            120,
+            2,
+            "Build",
+          ),
+          T("sat-sql", "SQL / DBMS practice", "SQL", 60, 1, "Core CS"),
+        ],
+        0: [
+          T(
+            "sun-lc",
+            "LeetCode contest / virtual contest",
+            "CP/DSA",
+            120,
+            2,
+            "Contest",
+          ),
+          T(
+            "sun-core",
+            "Core CS deep work: DBMS / CN / SQL",
+            "DBMS",
+            120,
+            2,
+            "Core CS",
+          ),
+          T(
+            "sun-system",
+            "System Design: learn + design one component",
+            "System Design",
+            120,
+            2,
+            "HLD",
+          ),
+          T(
+            "sun-review",
+            "Weekly review + next-week planning",
+            "System Design",
+            60,
+            1,
+            "Review",
+          ),
+        ],
+      };
+      const roadmap = [
+        [
+          "Oct 6–31",
+          "Foundation Reset",
+          [
+            "Spring Boot revision + Spring Security",
+            "2-day Spring AI revision, then continue playlist",
+            "Greedy + Bit Manipulation",
+            "Start DBMS + SQL",
+            "Start regular CF/LC contests",
+          ],
+        ],
+        [
+          "Nov 1–30",
+          "Microservices Month",
+          [
+            "Service discovery + API Gateway + Config Server",
+            "OpenFeign + Resilience4j + Kafka",
+            "Finish major DBMS + advanced SQL",
+            "TCP/IP, DNS, HTTP/HTTPS in CN",
+            "CF target: 1500–1600",
+          ],
+        ],
+        [
+          "Dec 1–31",
+          "Integration Month",
+          [
+            "Build serious Spring Boot microservices project",
+            "Finish Spring AI playlist + build RAG",
+            "Finish/revise CN",
+            "Start deeper System Design",
+            "CF target: 1550–1650; LC target: 2000–2150",
+          ],
+        ],
+      ];
+      const iso = (d) =>
+        new Date(d.getFullYear(), d.getMonth(), d.getDate())
+          .toISOString()
+          .slice(0, 10);
+      const pretty = (d) =>
+        d.toLocaleDateString("en-IN", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      let selected = new Date();
+      let tab = "today";
+      function save() {
+        localStorage.setItem(S, JSON.stringify(state));
+      }
+      function dayTasks(d) {
+        return schedule[d.getDay()] || [];
+      }
+      function done(d, t) {
+        return (state.days?.[iso(d)] || []).includes(t.id);
+      }
+      function toggle(t) {
+        let k = iso(selected),
+          a = [...(state.days?.[k] || [])],
+          i = a.indexOf(t.id);
+        i >= 0 ? a.splice(i, 1) : a.push(t.id);
+        state.days = { ...(state.days || {}), [k]: a };
+        save();
+        render();
+        toast("Progress updated");
+      }
+      function setTab(t) {
+        tab = t;
+        document
+          .querySelectorAll(".nav button")
+          .forEach((x) => x.classList.toggle("active", x.dataset.tab === t));
+        document.getElementById("title").textContent =
+          t === "today"
+            ? "Today's execution"
+            : t === "progress"
+              ? "Your progress"
+              : "Your roadmap";
+        render();
+      }
+      function toast(x) {
+        let e = document.getElementById("toast");
+        e.textContent = "✓ " + x;
+        e.style.display = "block";
+        setTimeout(() => (e.style.display = "none"), 1000);
+      }
+      function totals() {
+        let p = {};
+        sections.forEach((s) => (p[s[0]] = { done: 0, total: 0 }));
+        for (
+          let d = new Date(2026, 9, 6), end = new Date(2026, 11, 31);
+          d <= end;
+          d.setDate(d.getDate() + 1)
+        )
+          dayTasks(d).forEach((t) => {
+            p[t.section].total += t.points;
+            if (done(d, t)) p[t.section].done += t.points;
+          });
+        return p;
+      }
+      function streak() {
+        let n = 0,
+          d = new Date();
+        while (dayTasks(d).length && dayTasks(d).every((t) => done(d, t))) {
+          n++;
+          d.setDate(d.getDate() - 1);
+        }
+        return n;
+      }
+      function render() {
+        let c = document.getElementById("content"),
+          p = totals(),
+          all = Object.values(p).reduce((a, x) => a + x.total, 0),
+          earned = Object.values(p).reduce((a, x) => a + x.done, 0);
+        document.getElementById("points").textContent = earned;
+        document.getElementById("streak").textContent = streak();
+        if (tab === "today") renderToday(c);
+        else if (tab === "progress") renderProgress(c, p, earned, all);
+        else renderRoadmap(c);
+      }
+      function renderToday(c) {
+        let ts = dayTasks(selected),
+          ds = new Set(state.days?.[iso(selected)] || []),
+          doneN = ts.filter((t) => ds.has(t.id)).length,
+          pct = ts.length ? Math.round((doneN / ts.length) * 100) : 0;
+        c.innerHTML = `<div class="datebar"><button class="arrow" id="prev">‹</button><div class="date"><b>${pretty(selected)}</b><small>${iso(selected)}</small></div><button class="arrow" id="next">›</button><button class="today">Today</button></div><section class="hero"><div><span class="pill">${doneN}/${ts.length} tasks complete</span><h2>${doneN === ts.length ? "Excellent. Day complete." : "Make today count."}</h2><p>Don't chase hours. Chase completed, high-quality work.</p></div><div class="ring" style="--p:${pct}%"><b>${pct}%</b></div></section><div class="tasks">${ts.map((t) => `<button class="task ${ds.has(t.id) ? "done" : ""}" data-id="${t.id}"><span class="check">${ds.has(t.id) ? "✓" : ""}</span><span class="body"><b>${t.title}</b><small>${t.section} · ${t.minutes} min · ${t.tag}</small></span><span class="pts">+${t.points}</span></button>`).join("")}</div><div class="actions"><button id="all">✓ Complete all today's tasks</button><button id="tomorrow">Plan tomorrow →</button></div><section class="week"><div class="sectionHead"><div><div class="eyebrow">THIS WEEK</div><h3>Consistency beats intensity</h3></div></div><div class="weekgrid">${week()
+          .map(
+            (x) =>
+              `<button data-date="${iso(x.d)}"><span>${x.d.toLocaleDateString("en-IN", { weekday: "short" })}</span><b>${x.done}/${x.total}</b><i class="mini"><i style="width:${x.total ? (x.done / x.total) * 100 : 0}%"></i></i></button>`,
+          )
+          .join("")}</div></section>`;
+        document.getElementById("prev").onclick = () => {
+          selected.setDate(selected.getDate() - 1);
+          render();
+        };
+        document.getElementById("next").onclick = () => {
+          selected.setDate(selected.getDate() + 1);
+          render();
+        };
+        document.querySelector(".today").onclick = () => {
+          selected = new Date();
+          render();
+        };
+        document
+          .querySelectorAll(".task")
+          .forEach(
+            (e) =>
+              (e.onclick = () => toggle(ts.find((t) => t.id === e.dataset.id))),
+          );
+        document.getElementById("all").onclick = () => {
+          state.days = {
+            ...(state.days || {}),
+            [iso(selected)]: ts.map((t) => t.id),
+          };
+          save();
+          render();
+          toast("Day completed");
+        };
+        document.getElementById("tomorrow").onclick = () => {
+          selected.setDate(selected.getDate() + 1);
+          render();
+        };
+        document.querySelectorAll("[data-date]").forEach(
+          (e) =>
+            (e.onclick = () => {
+              selected = new Date(e.dataset.date + "T12:00:00");
+              render();
+            }),
+        );
+      }
+      function week() {
+        let d = new Date(),
+          day = d.getDay(),
+          m = new Date(d);
+        m.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+        return [...Array(7)].map((_, i) => {
+          let x = new Date(m);
+          x.setDate(m.getDate() + i);
+          let ts = dayTasks(x);
+          return {
+            d: x,
+            total: ts.reduce((a, t) => a + t.points, 0),
+            done: ts
+              .filter((t) => done(x, t))
+              .reduce((a, t) => a + t.points, 0),
+          };
+        });
+      }
+      function renderProgress(c, p, earned, all) {
+        c.innerHTML = `<section class="overall"><div class="pill">Roadmap completion</div><h2>${all ? Math.round((earned / all) * 100) : 0}%</h2><p>${earned} of ${all} planned points completed. Marking a task adds its points; unmarking removes them.</p><div class="bigbar"><i style="width:${all ? (earned / all) * 100 : 0}%"></i></div></section><div class="progress">${sections
+          .map((s) => {
+            let x = p[s[0]],
+              pct = x.total ? Math.round((x.done / x.total) * 100) : 0;
+            return `<article class="pc"><div class="pctop"><span class="ico" style="background:${s[2]}">${s[1]}</span><div><b>${s[0]}</b><small>${s[3]}</small></div><strong>${pct}%</strong></div><div class="bar"><i style="width:${pct}%;background:${s[2]}"></i></div><small>${x.done}/${x.total} points</small></article>`;
+          })
+          .join("")}</div>`;
+      }
+      function renderRoadmap(c) {
+        c.innerHTML = `<div class="roadmap">${roadmap.map((r, i) => `<article class="phase"><div class="num">0${i + 1}</div><div><div class="eyebrow">${r[0]}</div><h2>${r[1]}</h2><ul>${r[2].map((x) => `<li>${x}</li>`).join("")}</ul></div></article>`).join("")}<div class="finish"><b>December 31 target</b><span>Strong Spring backend + Spring AI foundation + DBMS/SQL/CN + CF trajectory + a serious project.</span></div></div>`;
+      }
+      document
+        .querySelectorAll(".nav button")
+        .forEach((b) => (b.onclick = () => setTab(b.dataset.tab)));
+      document.getElementById("reset").onclick = () => {
+        if (confirm("Reset all saved progress on this device?")) {
+          state = {};
+          save();
+          render();
+        }
+      };
+      render();
+    </script>
+  </body>
+</html>
